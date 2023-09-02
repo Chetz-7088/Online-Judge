@@ -1,4 +1,5 @@
 Server/node_modules
 Server/codes
 Server/outputs
+Server/.vscode
 client/node_modules
