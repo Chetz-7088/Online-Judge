@@ -6,14 +6,14 @@ function App() {
 
   const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
+  const [language, setLanguage] = useState('cpp');
   //console.log(code);
-
+  const payload = {
+    language,
+    code,
+  }
+  //console.log({ payload });
   const handleSubmit = async()=> {
-    const payload = {
-      language: 'cpp',
-      code
-    }
-
     try {
       const { data } = await axios.post('http://localhost:5000/run', payload);
       console.log(data);
@@ -26,11 +26,11 @@ function App() {
     <>
       <div className='container'>
         <h1>Online Code Compiler</h1>
-        <select className='select-box'>
+        <select className='select-box' onChange={(e)=>{ setLanguage(e.target.value) }}>
           <option value='cpp'>C++</option>
           <option value='c'>C</option>
-          <option value='java'>Java</option>
           <option value='py'>Python</option>
+          <option value='java'>Java</option>
           <option value='js'>JavaScript</option>
         </select>
         <textarea rows='20' cols='75' className='textarea'
