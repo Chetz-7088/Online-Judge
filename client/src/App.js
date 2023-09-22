@@ -1,48 +1,78 @@
 import './App.css';
 import { useState } from 'react';
 import axios from 'axios';
+import {Button,CircularProgress,TextField, Typography} from "@mui/material"
+import Navbar from './components/Navbar/Navbar';
+import Files from './components/Files/Files';
 
 function App() {
 
   const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
-  //console.log(code);
+  const [loader,setLoader]=useState(false);
+  const [extension,setExtension]=useState("cpp");
+  const [name,setName]=useState("undefined");
 
-  const handleSubmit = async()=> {
+  const setFile=(file)=>{
+      setExtension(file.extension);
+      setCode(file.code);
+      setName(file.name);
+  }
+  const handleSubmit = async () => {
     const payload = {
-      language: 'cpp',
+      extension,
       code
     }
 
     try {
+      setLoader(true);
       const { data } = await axios.post('http://localhost:5000/run', payload);
+      setLoader(false);
       console.log(data);
-      setOutput(data.output);
+      data.output?   setOutput(data.output) : setOutput(data.error.stderr);
+
+   
     } catch (error) {
-      console.log(error.message);
+       console.log({error})
     }
   }
   return (
-    <>
-      <div className='container'>
-        <h1>Online Code Compiler</h1>
-        <select className='select-box'>
-          <option value='cpp'>C++</option>
-          <option value='c'>C</option>
-          <option value='java'>Java</option>
-          <option value='py'>Python</option>
-          <option value='js'>JavaScript</option>
-        </select>
-        <textarea rows='20' cols='75' className='textarea'
-        value={code}
-        onChange={(e)=>{ setCode(e.target.value); }}
-        ></textarea>
-        <br></br>
-        <button onClick={handleSubmit}>SUBMIT</button>
-        {output &&
-          <div className='outputbox'>
-            <p>{output}</p>
-          </div>}
+    <>  
+     <Navbar />
+      <div className='ide'>
+        <Files setFile={setFile} />
+        <div className='editor'>
+          <div className='editor_menu'> 
+
+            <select  defaultValue={extension} className='select-box' onChange={e=>{setExtension(e.target.value)}}   >
+              <option value='cpp' selected >C++</option>
+              <option value='c'>C</option>
+              <option value='java'>Java</option>
+              <option value='py'>Python</option>
+              <option value='js'>JavaScript</option>
+            </select>
+            <Button variant='outlined' size='small'   onClick={handleSubmit}>RUN</Button>
+          </div>
+          <TextField 
+            multiline
+            variant='standard'
+            rows={26}
+            sx={{border:"0px solid black"}}
+            className='textarea'
+            sx={{margin:"20px"}}
+            InputProps={{
+              disableUnderline: true,
+            }}
+            placeholder='Write your code here'
+            value={code}
+            onChange={(e) => { setCode(e.target.value); }}
+          ></TextField>
+        </div>
+        <div className='outputBox'>
+          <Typography sx={{margin:"20px"}} >{
+            output ? output : "//Your results will be shown here"
+          } <br></br> {loader && <CircularProgress /> }</Typography>
+        </div>
       </div>
     </>
   );
