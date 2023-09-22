@@ -1,0 +1,18 @@
+.files,.editor,.outputBox{
+    height: 100%;
+    overflow: auto;
+    /* color: aliceblue; */
+ 
+ }
+ .files{
+   width: 15vw;
+   /* background-color: grey; */
+   background-color: #fff;
+ }
+ .file{
+  cursor: pointer;
+  display: block;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline-start: 10px;
+ }
