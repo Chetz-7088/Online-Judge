@@ -58,8 +58,8 @@ function App() {
             variant='standard'
             rows={26}
             sx={{border:"0px solid black"}}
+            // sx={{margin:"20px"}}
             className='textarea'
-            sx={{margin:"20px"}}
             InputProps={{
               disableUnderline: true,
             }}

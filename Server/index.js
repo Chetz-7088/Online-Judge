@@ -2,6 +2,10 @@ const express = require('express');
 const { generateFile } = require('./generatefile');
 const { executeCPP } = require('./executeCPP');
 const cors = require('cors');
+const { executeC } = require('./executeC');
+const { executeJS } = require('./executeJS');
+const { executePY } = require('./executePY');
+const { executeJAVA } = require('./executeJAVA');
 const app = express();
 
 app.use(cors());
@@ -13,17 +17,67 @@ app.get("/", (req, res)=>{
 });
 
 app.post("/run", async(req, res)=>{
-    const {language = 'cpp', code} = req.body;
+    const {language , code} = req.body;
+    //console.log(language);
     if(code === undefined){
         return res.status(404).json({success: false, error: "Empty code body!"});
     }
-    try {
-        const filePath = generateFile(language, code);
-        const output = await executeCPP(filePath);
-        res.json({ filePath, output });
-    } catch (error) {
-        // console.log({error})
-        res.json({ error: error});
+
+    switch(language){
+        case'c':
+            try {
+                const filePath = await generateFile(language, code);
+                const output = await executeC(filePath);
+                res.json({ filePath, output });
+            } catch (error) {
+                res.status(500).json({ error: error});
+            }
+            break;
+
+        case'cpp':
+            try {
+                const filePath = await generateFile(language, code);
+                const output = await executeCPP(filePath);
+                res.json({ filePath, output });
+            } catch (error) {
+                res.status(500).json({ error: error });
+            }
+            break;
+
+        case'py':
+            try {
+                const filePath = await generateFile(language, code);
+                const output = await executePY(filePath);
+                res.json({ filePath, output });
+            } catch (error) {
+                res.status(500).json({ error: error });
+            }
+            break;
+
+            
+        case'js':
+            try {
+                const filePath = await generateFile(language, code);
+                const output = await executeJS(filePath);
+                res.json({ filePath, output });
+            } catch (error) {
+                res.status(500).json({ error: error });
+            }
+            break;
+
+        // case'java':
+        //     try{
+        //         const filePath = await generateFile(language, code);
+        //         const output = await executeJAVA(filePath);
+        //         res.json({ filePath, output });
+        //     } catch (error) {
+        //         res.status(500).json({ error: error });
+        //     }
+        //     break;
+
+        default:
+            console.log('break');
+            break;
     }
 });
 
